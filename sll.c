@@ -41,11 +41,9 @@ node push_front(node head, int x){
     }
 }
 
-
-// .........................................................................................................................continue
-node locate(sll list, int x){
+node locate(node head, int x){
     node tmp = create_Node(x);
-    tmp = list->front;
+    tmp = head;
     while(tmp != NULL){
         if(tmp->value == x){
             return tmp;
@@ -55,19 +53,19 @@ node locate(sll list, int x){
     return NULL;
 }
 
-void insert_after(sll list, node nn, node pos, int x){
-    if(pos == NULL) return;
-    nn = create_Node(x);
-    if(list->front == NULL){
-        push_front(list, nn, x);
-        return;
+node insert_after(node head, node pos, int x){
+    if(pos == NULL) return head;
+    node nn = create_Node(x);
+    if(head == NULL){
+        push_front(head, x);
+        return head;
     }
-    pos->next = nn->next;
+    nn->next = pos->next;
     pos->next = nn;
 }
 
-node prev(sll list, node pos){
-    node tmp = list->front;
+node prev(node head, node pos){
+    node tmp = head;
     while(tmp != NULL){
         if(tmp->next == pos) return tmp;
         tmp = tmp->next;
@@ -75,41 +73,38 @@ node prev(sll list, node pos){
     return NULL;
 }
 
-sll insert_before(sll list, node pos, int x){
+node insert_before(node head, node pos, int x){
     if(pos == NULL){
-        return list;
+        return head;
     }
     node nn = create_Node(x);
-    if(list->front == NULL){
-        list->front = list->back = nn;
-        return list;
+    if(head == NULL){
+        head = nn;
+        return head;
     }
-    prev(list, pos)->next = nn;
+    prev(head, pos)->next = nn;
     nn->next = pos;
-    return list;
+    return head;
 }
 
-sll insert_before_recursive(sll list, node pos, int x){
+node insert_before_recursive(node head, node pos, int x){
     if(pos == NULL){
-        return list;
+        return head;
     }
-    if(list->front == NULL || pos == list->front){
+    if(head == NULL || pos == head){
         node nn = create_Node(x);
-        nn->next = list->front;
-        nn = list->front;
+        nn->next = head;
+        nn = head;
     }
-    node tmp = list->front;
-    while(list->front != pos){
-        list->front = list->front->next;
-        insert_before_recursive(list, pos, x);
+    else{
+        head->next = insert_before_recursive(head->next, pos, x); //***********
     }
-    list->front = tmp;
-    return list;
+    return head;
 }
 
-int sum(sll list){
+int sum(node head){
     int S = 0;
-    node tmp = list->front;
+    node tmp = head;
     while(tmp != NULL){
         S = S + tmp->value;
         tmp = tmp->next;
@@ -117,36 +112,40 @@ int sum(sll list){
     return S;
 }
 
-int sum_recursive(sll list){
-    if(list->front == NULL){
+int sum_recursive(node head){
+    if(head == NULL){
         return 0;
     }
-    int tmp = list->front->value;
-    node temp = list->front;
-    list->front = list->front->next;
-    return tmp + sum_recursive(list);
+    return head->value + sum_recursive(head->next);
 }
 
-sll remove(sll list, node pos){
-    if(list->front == NULL || pos == NULL) return list;
-    if(list->front == pos){
-        list->front = list->front->next;
+node remove_an(node head, node pos){
+    if(head == NULL || pos == NULL) return head;
+    if(head == pos){
+        head = head->next;
         pos = NULL;
         free(pos);
-        return list;
+        return head;
     }
     else{
-        list->front->next = remove(list->front, pos);
-        return list;
+        head->next = remove_an(head->next, pos);
+        return head;
     }
+}
+
+void print_list(node head){
+    node tmp = head;
+    while(tmp != NULL){
+        printf("%d ", tmp->value);
+        tmp = tmp->next;
+    }
+    printf("\n");
 }
 
 int main(){
-    sll list = create_List();
-    list->front = create_Node(1);
-    node n1, n0;
-    push_back(list, n1, 2);
-    push_front(list, n0, 0);
-    locate(list, 2);
+    node head = create_Node(1);
+    push_back(head, 2);
+    push_front(head, 0);
+    print_list(head);
     return 0;
 }
